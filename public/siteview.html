@@ -2,45 +2,418 @@
 <html lang="ja" data-bs-theme="blue">
 
 <head>
-    <title>Harezora-Sites</title>
-    <meta charset="utf-8">
-    <style>
-        body {
-            background: #000
-        }
-    </style>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <!-- Bootstrap CSSの読み込み -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+  <title>Harezora-Sites</title>
+  <meta charset="utf-8" />
+  <style>
+    body {
+      background: #000
+    }
+  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous" />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz"
+    crossorigin="anonymous"></script>
 
-    <link rel="stylesheet" href="style/main.css">
-    <script src="js/preload.js" defer></script>
-
+  <link rel="stylesheet" href="style/main.css" />
+  <script src="https://cdn.jsdelivr.net/npm/idb@7/build/umd.js"></script>
 </head>
 
 <body>
-    <header></header>
+  <header></header>
+  <!--conten teditable="true"絶対つける！！！！-->
+  <div class="container-fluid flex">
+    <main class="col-md-10">
+      <div class="position-relative overflow-hidden m-md-3 text-center bg-body-tertiary">
+        <div class="col-md-10 p-lg-5 mx-auto my-5">
+          <h1 class="display-3 fw-bold">
+            <span contenteditable="true">タイトルを入力...</span>
+          </h1>
+          <div class="product-device shadow-sm d-none d-md-block"></div>
+        </div>
+      </div>
+      <div class="col-md-10 main-text container text-left over-line main-contents">
+        <div class="paragraph-0 ">
+          <br />
+        </div>
+      </div>
+    </main>
+    <div class="col-md-2 edit-bar">
+      <h2>Add Element</h2>
+      <button type="button" class="btn btn-secondary add-text">text</button>
+      <button type="button" class="btn btn-secondary add-heading">
+        heading
+      </button>
+      <button type="button" class="btn btn-secondary add-image">image</button>
+      <div class="accordion" id="accordionExample">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne"
+              aria-expanded="true" aria-controls="collapseOne">
+              Added images
+            </button>
+          </h2>
+          <div id="collapseOne" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            <div class="accordion-body not-padding contents-container">
+              <ul class="list-group list-group-horizontal ">
+                <li class="list-group-item"><img></li>
+                <li class="list-group-item"><img></li>
+                <li class="list-group-item"><img></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--
+          <button
+        type="button"
+        class="btn btn-primary element-menu-btn"
+        id="original-element-menu-btn"
+      >
+    -->
 
-    <div id="user-info" class="hide"></div>
-    <button class="btn btn-outline-success hide" id="sign-out-btn">Sign out</button>
-    <!-- jQuery,Popper.js,Bootstrap JSの順番で読み込む-->
-    <!-- jQueryの読み込み -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
-        integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
-        crossorigin="anonymous"></script>
-    <!-- Popper.jsの読み込み -->
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"
-        integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN"
-        crossorigin="anonymous"></script>
-    <!-- Bootstrapのjsの読み込み -->
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
-        integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
-        crossorigin="anonymous"></script>
+  <div class="dropdown" id="original-element-menu-btn">
+    <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
 
-    <!--メイン部分-->
-    <script src="js/main.js" type="module" defer></script>
-    <script src="js/account.js" type="module"></script>
+    </button>
+    <ul class="dropdown-menu">
+      <li><span class="dropdown-item" id="delete-element-btn">削除</span></li>
+      <li><span class="dropdown-item" id="insert-img">画像を挿入</span></li>
+    </ul>
+  </div>
+  </button>
+  <input type="file" id="fileInput" class="hide" accept="image/*">
+  <img id="preview" class="hide">
+  <img id="sample" class="hide" src="img/sample.png">
+
+</div>
+  <script>
+    const settings = {
+      defaultImageSize: 480,//横サイズ
+    }
+    const imgList = []
+    let targetList = [];
+    let isPushedInsertImgBtn = false
+    const editorEl = {
+      addText: document.querySelector(".add-text"),
+      addHeading: document.querySelector(".add-heading"),
+      addImage: document.getElementById("fileInput"),
+      main: document.querySelector(".main-contents"),
+      original: {
+        elementMenuBtn: document.getElementById("original-element-menu-btn"),
+      },
+      contentsContainer: document.querySelector(".contents-container"),
+      updateContentsContainer: function () {
+        this.contentsContainer.innerHTML = ""
+
+        var rate = 2
+        for (var i = 0; i < Math.ceil(imgList.length / rate); i++) {
+          var src = `<ul class="list-group list-group-horizontal ">
+                <li class="list-group-item"><img class="contents-img-${i * rate + 0} contents-img"></li>
+                <li class="list-group-item"><img class="contents-img-${i * rate + 1} contents-img"></li>
+              </ul>`
+          this.contentsContainer.innerHTML += src
+        }
+        for (var i = 0; i < imgList.length; i++) {
+          var arr = document.querySelectorAll(".contents-img-" + 0)
+          [0].parentNode.tagName
+          document.querySelector(".contents-img-" + i).src = imgList[i]
+        }
+
+        //画像を挿入ボタンが押されたときの処理
+        if (isPushedInsertImgBtn !== false) {
+          var num = imgList.length - 1
+          pageData.list[isPushedInsertImgBtn].el.childNodes[0].innerHTML +=
+              `<br><img width="480px" class="contents-img-${num} contents-img" src="${imgList[num]}" >`
+          isPushedInsertImgBtn = false
+
+        }
+      }
+    };
+
+
+
+    editorEl.original.elementMenuBtn.style.display = "none"
+    editorEl.updateContentsContainer()
+
+    const mouse = {
+      x: 0,
+      y: 0,
+    };
+    document.addEventListener("mousemove", (event) => {
+      mouse.x = event.clientX; // 横座標
+      mouse.y = event.clientY; // 縦座標
+    });
+
+    const pageData = {
+      savedData: {
+        src: "",
+        list: [],
+      },
+      list: [],
+      getRange: function (el) {
+        var data = el.getBoundingClientRect();
+        var range = {
+          top: data.y,
+          bottom: data.y + data.height,
+          left: data.x,
+          right: data.x + data.width,
+          el: el,
+        };
+        return range;
+      },
+      setElement: function (el) {
+        if (el == undefined) {
+          return 0;
+        }
+        pageData.list.push(this.getRange(el));
+
+      },
+      update: function () {
+        this.savedData.src = editorEl.main.innerHTML
+        this.savedData.list = this.list
+      },
+      refresh: function () {
+
+      },
+    };
+    function addedImgProcess(num) {
+      let elList = []
+
+      var arr = document.querySelectorAll(".contents-img-" + num)
+      for (var el of arr) {
+        var tag = el.parentElement.tagName
+        if (tag == "SPAN") {
+          elList.push(el)
+        }
+      }
+      for (var el of elList) {
+        if (el.classList.contains("labeled")) {
+          continue;
+        } else {
+          el.classList.add("labeled")
+          el.style.width = "480px"
+        }
+      }
+
+    }
+    function insertElement(tag = "p", positionData, message = "test") {
+      var message = message;
+      var el = document.createElement(tag);
+      el.classList.add("container-fluid");
+      el.innerHTML = "<span contenteditable='true'>" + message + "</span>";
+
+      pageData.setElement(el);
+      editorEl.main.append(el);
+
+      //リストとかに追加して管理できるようなプログラムを書いて
+      //要素がホバーされるとメニューとか出てきて
+      //要素を移動とかできるようにして
+      // ドロップ時の処理
+
+      el.addEventListener("drop", function (e) {
+        //e.preventDefault();
+
+        // ① HTMLとしてドロップされた場合（imgタグ）
+        const html = e.dataTransfer.getData("text/html");
+        if (html) {
+          const temp = document.createElement("div");
+          temp.innerHTML = html;
+
+          const img = temp.querySelector("img");
+          if (img) {
+            var num = null
+            for (var i = 0; i < imgList.length; i++) {
+              var b = img.classList.contains("contents-img-" + i)
+              if (b) {
+                num = i
+              }
+            }
+            setTimeout(() => { addedImgProcess(num) }, 10)
+
+            return;
+          }
+
+        }
+      })
+    }
+    editorEl.addHeading.addEventListener("click", () => {
+      insertElement("h1", null, "test");
+    });
+    editorEl.addText.addEventListener("click", () => {
+      insertElement("p", null, "test");
+    });
+
+    insertElement("h1", null, "First");
+    insertElement("p", null, "Sample text.");
+
+    function isDropdownOpen(dropdownElement) {
+      const menu = dropdownElement.querySelector('.dropdown-menu');
+      return menu.classList.contains('show');
+    }
+
+    let preTargetList = [];
+    setInterval(() => {
+      var list = pageData.list;
+      targetList = [];
+      var margin, el
+      for (var i = 0; i < list.length; i++) {
+        el = list[i].el;
+        margin = window.getComputedStyle(el).marginBottom
+        margin = Number(margin.split("px")[0])
+        el.style.background = "none";
+        var left = list[i].left - 50;
+        var right = list[i].right;
+        var top = list[i].top;
+        var bottom = list[i].bottom;
+        if (mouse.x > left && mouse.x < right) {
+          if (mouse.y < bottom + margin && mouse.y > top) {
+            el.style.background = "#dddddd";
+            targetList.push(i);
+          }
+        }
+        list[i] = pageData.getRange(el);
+
+      }
+      var menuBtn = editorEl.original.elementMenuBtn
+      if (isDropdownOpen(menuBtn) == false) {
+        if (targetList.length == 0) {
+          menuBtn.style.display = "none"
+        } else {
+          menuBtn.style.display = "block"
+          menuBtn.style.left = (list[targetList[0]].left - 30) + "px"
+          menuBtn.style.top = (list[targetList[0]].top) + "px"
+        }
+      }
+
+
+      pageData.update()
+
+    }, 1000 / 30);
+    let targetElement = null
+
+    document.querySelector("#delete-element-btn").addEventListener("click", () => {
+      // const c = confirm("削除しますか？")
+      const c = true
+      if (c) {
+        console.log(targetElement)
+        pageData.list[targetElement].el.remove()
+        pageData.list.splice(targetElement, 1)
+        pageData.refresh()
+      }
+    })
+    document.querySelector("#original-element-menu-btn").addEventListener("click", () => {
+      targetElement = targetList[0]
+    })
+    document.querySelector("#insert-img").addEventListener("click", () => {
+      isPushedInsertImgBtn = targetElement
+      editorEl.addImage.click()
+    })
+
+
+    ///////////////////
+    function convertToWebP(file, quality = 0.8) {
+
+      return new Promise((resolve, reject) => {
+        // 対応拡張子チェック
+        if (!/image\/(png|jpeg|jpg)/.test(file.type)) {
+          reject(new Error("画像形式は PNG/JPEG/JPG のみ対応しています。"));
+          return;
+        }
+
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+
+        img.onload = () => {
+          const canvas = document.createElement("canvas");
+          canvas.width = img.width;
+          canvas.height = img.height;
+
+          const ctx = canvas.getContext("2d");
+          ctx.drawImage(img, 0, 0);
+
+          canvas.toBlob(
+            blob => {
+              if (!blob) {
+                reject(new Error("WebP変換失敗"));
+                return;
+              }
+              resolve(blob);
+              URL.revokeObjectURL(url);
+            },
+            "image/webp",
+            quality
+          );
+        };
+
+        img.onerror = () => reject(new Error("画像読み込み失敗"));
+        img.src = url;
+      });
+    }
+function imgToFile(img, fileName = "image.png") {
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = img.naturalWidth;
+    canvas.height = img.naturalHeight;
+
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0);
+
+    canvas.toBlob((blob) => {
+      if (!blob) {
+        reject(new Error("Blob生成失敗"));
+        return;
+      }
+
+      const file = new File([blob], fileName, {
+        type: blob.type,
+        lastModified: Date.now(),
+      });
+      resolve(file);
+    }, "image/png");
+  });
+}
+
+    async function inputImgProcess(file) {
+      const webpBlob = await convertToWebP(file, 0.8);
+
+      // 表示確認
+      const img = document.getElementById("preview");
+      img.src = URL.createObjectURL(webpBlob);
+      imgList.push(img.src)
+      console.log("WebP size:", Math.round(webpBlob.size / 1024), "KB");
+
+      editorEl.updateContentsContainer()
+    }
+
+    editorEl.addImage.addEventListener("change", async e => {
+      const file = e.target.files[0];
+      console.log(typeof file)
+      if (!file) return;
+
+      try {
+        inputImgProcess(file)
+      } catch (err) {
+        alert("error:" + err.message)
+      }
+
+    });
+
+    document.querySelector(".add-image").addEventListener("click", () => {
+      editorEl.addImage.click()
+    })
+
+  </script>
+
+  <div id="user-info" class="hide">
+
+    </div>
+  <button class="btn btn-outline-success hide" id="sign-out-btn">
+    Sign out
+  </button>
 </body>
 
 </html>
