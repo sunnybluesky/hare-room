@@ -1,0 +1,107 @@
+:root {
+    /* ライトモード用トークン（Bootstrap既定カラーをベースに） */
+    --bg: #ffffff;
+    --text: #212529;
+    --card-bg: #ffffff;
+    --muted: #6c757d;
+    --border: #dee2e6;
+    --primary: #0d6efd;
+}
+
+/* ダークテーマ上書き用クラス */
+[data-theme="dark"] {
+    --bg: #121212;
+    --text: #e9ecef;
+    --card-bg: #1e1e1e;
+    --muted: #adb5bd;
+    --border: #2c2c2c;
+    --primary: #66aaff;
+}
+
+/* Bootstrap コンポーネントの見た目を変数に紐付ける */
+body {
+    background-color: var(--bg);
+    color: var(--text);
+}
+
+h1 h2 h3 h4 h5 h6 {
+    color: var(--text) !important;
+
+}
+
+input {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+ul li {
+    background-color: var(--bg) !important;
+    color: var(--text) !important;
+}
+
+.navbar {
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border);
+}
+
+.card {
+    background-color: var(--card-bg);
+    color: var(--text);
+    border: 1px solid var(--border);
+}
+
+a,
+.navbar-brand {
+    color: var(--primary);
+}
+
+.text-muted {
+    color: var(--muted) !important;
+}
+
+/* 必要に応じてフォーム、ボタン、モーダルなどを追加で上書き */
+.btn-outline-secondary {
+    color: var(--text);
+    border-color: var(--border);
+}
+
+#theme-toggle>img {
+    width: 30px;
+}
+
+.hide {
+    display: none !important;
+}
+
+.flex {
+    display: flex;
+}
+
+#user-menu>img {
+    height: 30px;
+    border-radius: 15px;
+}
+
+
+@media (max-width: 700px) and (orientation: portrait) {
+
+    /* スタイル */
+    .portrait-hide {
+        display: none !important;
+    }
+}
+
+/*chat*/
+.chat-frame {
+    border: 1px #fff solid;
+    border-radius: 10px;
+}
+
+li {
+    padding-bottom: 0px !important;
+}
+
+.chat-date-text{
+    font-size:10px;
+    color:var(--muted) !important; 
+}
