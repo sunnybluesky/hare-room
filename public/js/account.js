@@ -223,7 +223,7 @@ export class ChatRoom {
       var time = arr[i].time.seconds * 1000 //秒からミリ秒に
       time = new Date(time)
 
-      var timeString = `${time.getMonth()}/${time.getDate()} ${time.getHours()}:${time.getMinutes()}`
+      var timeString = `${time.getMonth()+1}/${time.getDate()} ${time.getHours()}:${time.getMinutes()}`
 
       //HTML部分
       el.innerHTML = `<div><span>${arr[i].name} : ${arr[i].msg}</span>
