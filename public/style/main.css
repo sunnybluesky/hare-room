@@ -105,3 +105,30 @@ li {
     font-size:10px;
     color:var(--muted) !important; 
 }
+
+.over-line{
+    border-top: #212529 1px solid;
+}
+.edit-bar{
+    border-left: #212529 1px solid;
+}
+.element-menu-btn{
+    position: fixed;
+}
+#original-element-menu-btn{
+    position:fixed;
+}
+.not-padding{
+    padding:0px;
+}
+.contents-container > ul > li{
+    width: 50%;
+    padding:2px;
+}
+.contents-container > ul > li > img{
+    width: 100%;
+    padding:0px;
+    margin:0px;
+}
+.contents-img{
+}
