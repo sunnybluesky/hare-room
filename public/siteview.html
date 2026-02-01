@@ -65,6 +65,20 @@
           </div>
         </div>
       </div>
+      <div class="accordion" id="accordion-hedder-settings">
+        <div class="accordion-item">
+          <h2 class="accordion-header">
+            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo"
+              aria-expanded="true" aria-controls="collapseTwo">
+              Header settings
+            </button>
+          </h2>
+          <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
+            a
+          </div>
+        </div>
+
+      </div>
     </div>
   </div>
   <!--
@@ -89,7 +103,7 @@
   <img id="preview" class="hide">
   <img id="sample" class="hide" src="img/sample.png">
 
-</div>
+  </div>
   <script>
     const settings = {
       defaultImageSize: 480,//横サイズ
@@ -110,12 +124,16 @@
         this.contentsContainer.innerHTML = ""
 
         var rate = 2
-        for (var i = 0; i < Math.ceil(imgList.length / rate); i++) {
-          var src = `<ul class="list-group list-group-horizontal ">
+        if (imgList.length == 0) {
+          this.contentsContainer.innerHTML += "画像が挿入されていません。"
+        } else {
+          for (var i = 0; i < Math.ceil(imgList.length / rate); i++) {
+            var src = `<ul class="list-group list-group-horizontal ">
                 <li class="list-group-item"><img class="contents-img-${i * rate + 0} contents-img"></li>
                 <li class="list-group-item"><img class="contents-img-${i * rate + 1} contents-img"></li>
               </ul>`
-          this.contentsContainer.innerHTML += src
+            this.contentsContainer.innerHTML += src
+          }
         }
         for (var i = 0; i < imgList.length; i++) {
           var arr = document.querySelectorAll(".contents-img-" + 0)
@@ -127,7 +145,7 @@
         if (isPushedInsertImgBtn !== false) {
           var num = imgList.length - 1
           pageData.list[isPushedInsertImgBtn].el.childNodes[0].innerHTML +=
-              `<br><img width="480px" class="contents-img-${num} contents-img" src="${imgList[num]}" >`
+            `<br><img width="480px" class="contents-img-${num} contents-img" src="${imgList[num]}" >`
           isPushedInsertImgBtn = false
 
         }
@@ -353,29 +371,29 @@
         img.src = url;
       });
     }
-function imgToFile(img, fileName = "image.png") {
-  return new Promise((resolve, reject) => {
-    const canvas = document.createElement("canvas");
-    canvas.width = img.naturalWidth;
-    canvas.height = img.naturalHeight;
+    function imgToFile(img, fileName = "image.png") {
+      return new Promise((resolve, reject) => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
 
-    const ctx = canvas.getContext("2d");
-    ctx.drawImage(img, 0, 0);
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
 
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error("Blob生成失敗"));
-        return;
-      }
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error("Blob生成失敗"));
+            return;
+          }
 
-      const file = new File([blob], fileName, {
-        type: blob.type,
-        lastModified: Date.now(),
+          const file = new File([blob], fileName, {
+            type: blob.type,
+            lastModified: Date.now(),
+          });
+          resolve(file);
+        }, "image/png");
       });
-      resolve(file);
-    }, "image/png");
-  });
-}
+    }
 
     async function inputImgProcess(file) {
       const webpBlob = await convertToWebP(file, 0.8);
@@ -410,7 +428,7 @@ function imgToFile(img, fileName = "image.png") {
 
   <div id="user-info" class="hide">
 
-    </div>
+  </div>
   <button class="btn btn-outline-success hide" id="sign-out-btn">
     Sign out
   </button>
