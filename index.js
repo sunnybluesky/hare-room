@@ -10,7 +10,7 @@ const colors = require('colors');
 
 app.use(express.static(__dirname + '/public'));
 //3000番ポート
-server.listen(3000, () => {
+server.listen(3000,() => {
   console.log('');
   console.log('┏━━━━━━━━━━━━━━━━━━━━━━━┓');
   console.log('┃ ' + 'welcome to hare-room! '.rainbow + '┃');
