@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
+
 <body>
-  <h1>Google Sheets API (OAuth2) 連携</h1>
+  <h1>Google Sheets API (OAuth2) 連携 1</h1>
   <button id="auth_btn" onclick="handleAuthClick()">ログインしてデータ取得</button>
   <pre id="content" style="white-space: pre-wrap;"></pre>
 
@@ -9,46 +10,48 @@
   <script src="https://accounts.google.com/gsi/client"></script>
 
   <script>
-    const CLIENT_ID = '495789808318-eobf2v7itf2g261oc1m7si75unijthmk.apps.googleusercontent.com'; // 取得したID
-    const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-    const SPREADSHEET_ID = '1lqzR6OCwLsKah7sTxkc5eE4CdVTa_wDNce4no3rfs34'; // 操作したいシートID
-    const RANGE = 'シート1!A1'; // 取得したい範囲
+    // --- 設定エリア ---
+const CLIENT_ID = '495789808318-eobf2v7itf2g261oc1m7si75unijthmk.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyCYfUOA5obSJymkLhf4x3_nkKWWEofjnIY'; // ★追加: Google Cloud Consoleで発行したAPIキー
+const SPREADSHEET_ID = '1lqzR6OCwLsKah7sTxkc5eE4CdVTa_wDNce4no3rfs34';
+const RANGE = 'シート1!A1';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
 
-    let tokenClient;
-    let gapiInited = false;
-    let gisInited = false;
+// 1. GAPI（APIクライアント）の初期化
+function gapiLoaded() {
+  gapi.load('client', async () => {
+    await gapi.client.init({
+      apiKey: API_KEY, // ★重要: APIキーをセット
+      discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+    });
+    gapiInited = true;
+  });
+}
 
-    // 1. GAPI（APIクライアント）の初期化
-    function gapiLoaded() {
-      gapi.load('client', async () => {
-        await gapi.client.init({
-          // ここでAPIキーは不要（トークンを使うため）
-          discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-        });
-        gapiInited = true;
-      });
-    }
-
-    // 2. GIS（認証用ライブラリ）の初期化
-    function gisLoaded() {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: (resp) => {
-          if (resp.error !== undefined) throw (resp);
-          listMajors(); // 認証成功後に実行
-        },
-      });
-      gisInited = true;
-    }
-
+// 2. GIS（認証用ライブラリ）の初期化
+function gisLoaded() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID, // ★修正: 'YOUR_CLIENT_ID' から変数名に変更
+    scope: SCOPES,
+    callback: (tokenResponse) => {
+      if (tokenResponse.error !== undefined) {
+        console.error("認証エラー:", tokenResponse);
+        return;
+      }
+      gapi.client.setToken(tokenResponse);
+      console.log("認証成功！");
+      listMajors();
+    },
+  });
+  gisInited = true;
+}
     // 3. ログインボタン押下時
     function handleAuthClick() {
       // すでに有効なトークンがあるか確認、なければポップアップを表示
       if (gapi.client.getToken() === null) {
-        tokenClient.requestAccessToken({prompt: 'consent'});
+        tokenClient.requestAccessToken({ prompt: 'consent' });
       } else {
-        tokenClient.requestAccessToken({prompt: ''});
+        tokenClient.requestAccessToken({ prompt: '' });
       }
     }
 
@@ -73,4 +76,5 @@
     };
   </script>
 </body>
+
 </html>
