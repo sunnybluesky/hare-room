@@ -46,6 +46,94 @@
     <!--メイン部分-->
     <script src="js/main.js" type="module" defer></script>
     <script src="js/account.js" type="module"></script>
+
+  <script src="https://apis.google.com/js/api.js"></script>
+  <script src="https://accounts.google.com/gsi/client"></script>
+    <!---->
+  <h1>Google Sheets API (OAuth2) 連携 1</h1>
+  <button id="auth_btn" onclick="handleAuthClick()">ログインしてデータ取得</button>
+  <pre id="content" style="white-space: pre-wrap;"></pre>
+
+
+  <script>
+    // --- 設定エリア ---
+const CLIENT_ID = '495789808318-eobf2v7itf2g261oc1m7si75unijthmk.apps.googleusercontent.com';
+const API_KEY = 'AIzaSyCYfUOA5obSJymkLhf4x3_nkKWWEofjnIY'; // ★追加: Google Cloud Consoleで発行したAPIキー
+const SPREADSHEET_ID = '1lqzR6OCwLsKah7sTxkc5eE4CdVTa_wDNce4no3rfs34';
+const RANGE = 'シート1!B1';
+const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+
+// 1. GAPI（APIクライアント）の初期化
+function gapiLoaded() {
+    console.log("A")
+  gapi.load('client', async () => {
+    await gapi.client.init({
+      apiKey: API_KEY, // ★重要: APIキーをセット
+      discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+    });
+    gapiInited = true;
+  });
+}
+
+// 2. GIS（認証用ライブラリ）の初期化
+function gisLoaded() {
+  tokenClient = google.accounts.oauth2.initTokenClient({
+    client_id: CLIENT_ID, // ★修正: 'YOUR_CLIENT_ID' から変数名に変更
+    scope: SCOPES,
+    callback: (tokenResponse) => {
+      if (tokenResponse.error !== undefined) {
+        console.error("認証エラー:", tokenResponse);
+        return;
+      }
+      gapi.client.setToken(tokenResponse);
+      console.log("認証成功！");
+      listMajors();
+    },
+  });
+  gisInited = true;
+}
+    // 3. ログインボタン押下時
+    function handleAuthClick() {
+      // すでに有効なトークンがあるか確認、なければポップアップを表示
+      if (gapi.client.getToken() === null) {
+        tokenClient.requestAccessToken({ prompt: '' });
+      } else {
+        tokenClient.requestAccessToken({ prompt: '' });
+      }
+    }
+
+    // 4. 実際にデータを取得する処理
+    async function listMajors() {
+      try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: SPREADSHEET_ID,
+          range: RANGE,
+        });
+        const value = response.result.values[0][0];
+        document.getElementById('content').innerText = "取得した値: " + value;
+      } catch (err) {
+        document.getElementById('content').innerText = err.message;
+      }
+    }
+// 4. 自動ログイン（サイレント認証）用
+function autoLogin() {
+  // ユーザーが以前に許可していれば、ポップアップなしで callback が実行される
+  // 許可が切れている場合は何も起きないか、エラーが返る
+  tokenClient.requestAccessToken({ prompt: 'none', });
+}
+
+// ライブラリの読み込み完了を待って自動実行
+setTimeout(() => {
+  gapiLoaded();
+  gisLoaded();
+  
+  // ライブラリの初期化には少し時間がかかるので、少し遅らせて実行
+  setTimeout(() => {
+    autoLogin();
+  }, 2000); 
+},500);
+  </script>
+
 </body>
 
 </html>
