@@ -5,7 +5,7 @@
   <h1>Google Sheets API (OAuth2) 連携 1</h1>
   <button id="auth_btn" onclick="handleAuthClick()">ログインしてデータ取得</button>
   <pre id="content" style="white-space: pre-wrap;"></pre>
-
+  <p id="output"></p>
   <script src="https://apis.google.com/js/api.js"></script>
   <script src="https://accounts.google.com/gsi/client"></script>
 
@@ -68,12 +68,32 @@ function gisLoaded() {
         document.getElementById('content').innerText = err.message;
       }
     }
+async function initClient() {
+      try {
+        // 2. APIキーとDiscovery Docsで初期化
+        await gapi.client.init({
+          apiKey: API_KEY,
+          discoveryDocs: ["https://sheets.googleapis.com/$discovery/rest?version=v4"],
+        });
 
+        // 3. データの取得（ログイン処理なしで直接呼べる）
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+          spreadsheetId: SPREADSHEET_ID,
+          range: RANGE,
+        });
+
+        console.log(response.result.values);
+      } catch (err) {
+        document.getElementById('output').innerText = "エラー: " + err.message;
+      }
+    }
     // ライブラリの読み込み
     window.onload = () => {
       gapiLoaded();
       gisLoaded();
+      gapi.load('client', initClient);
     };
+    
   </script>
 </body>
 
