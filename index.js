@@ -101,7 +101,7 @@ const path = require('path');
 async function getSheetValues() {
   // 認証設定
   const auth = new google.auth.GoogleAuth({
-    keyFile: path.join(__dirname, 'turnkey-energy-481507-a4-3360f6d5793e.json'), // ダウンロードしたJSONパス
+    keyFile: path.join(__dirname, '../hare-room-secret/turnkey-energy-481507-a4-3360f6d5793e.json'), // ダウンロードしたJSONパス
     scopes: ['https://www.googleapis.com/auth/spreadsheets.readonly'],
   });
 
