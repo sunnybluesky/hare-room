@@ -12,10 +12,9 @@ jobs:
         # ラズパイ上で index.js があるディレクトリの絶対パスを指定してください
         working-directory: /home/share/Github/hare-room 
         run: |
-          # 最新のコードを取得
-          git pull origin main
-          
-          # 依存関係の更新（必要に応じて）
-          # npm install
-          
+          # 1. リモートの最新情報を取得
+          git fetch origin main
+          # 2. 現在のブランチをリモートの最新状態に強制リセット（これが確実です）
+          git reset --hard origin/main
+          # 3. PM2で再起動
           pm2 restart hare-room
