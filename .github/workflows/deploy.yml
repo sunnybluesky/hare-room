@@ -1,0 +1,21 @@
+name: Deploy to Raspberry Pi
+
+on:
+  push:
+    branches: [ main ] # mainブランチにpushされた時に実行
+
+jobs:
+  deploy:
+    runs-on: self-hosted # ラズパイのRunnerを指定
+    steps:
+      - name: Pull latest code and Restart PM2
+        # ラズパイ上で index.js があるディレクトリの絶対パスを指定してください
+        working-directory: /home/pi/your-project-dir 
+        run: |
+          # 最新のコードを取得
+          git pull origin main
+          
+          # 依存関係の更新（必要に応じて）
+          # npm install
+          
+          pm2 restart hare-room
