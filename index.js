@@ -13,7 +13,7 @@ app.use(express.static(__dirname + '/public'));
 server.listen(3000,() => {
   console.log('');
   console.log('┏━━━━━━━━━━━━━━━━━━━━━━━┓');
-  console.log('┃ ' + 'welcome to hare-room! '.rainbow + '┃');
+  console.log('┃ ' + 'Welcome to hare-room! '.rainbow + '┃');
   console.log('┗━━━━━━━━━━━━━━━━━━━━━━━┛');
   setTimeout(()=>{
     io.emit("reload")
