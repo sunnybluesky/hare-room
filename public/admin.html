@@ -4,35 +4,17 @@
 <head>
     <title>Harezora-Sites</title>
     <meta charset="utf-8">
-    <style>
-        body {
-            background: #000
-        }
-    </style>
+
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <!-- Bootstrap CSSの読み込み -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
         integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
 
-    <link rel="stylesheet" href="style/main.css">
     <script src="js/preload.js" defer></script>
     <script src="https://apis.google.com/js/api.js"></script>
     <script src="https://accounts.google.com/gsi/client"></script>
     <dialog class="entrants"></dialog>
-</head>
-
-<body>
-    <header></header>
-
-    <div class="container my-5 ">
-        <h1>管理者用ページ</h1>
-        <p id="ip">あなたのIPアドレス : Waiting...</p>
-        <p id="server-res-check">サーバーレスポンス : Waiting...</p>
-        <p>管理者権限：<span id="admin-verified">認証されていません...</span></p>
-    </div>
-
-    <div id="user-info" class="hide"></div>
-    <button class="btn btn-outline-success hide" id="sign-out-btn">Sign out</button>
+        <button class="btn btn-outline-success hide" id="sign-out-btn">Sign out</button>
     <!-- jQuery,Popper.js,Bootstrap JSの順番で読み込む-->
     <!-- jQueryの読み込み -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
@@ -46,6 +28,22 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
+
+    <link rel="stylesheet" href="style/main.css">
+</head>        
+
+<body>
+    <header></header>
+
+    <div class="container my-5 ">
+        <h1>管理者用ページ</h1>
+        <p id="ip">あなたのIPアドレス : Waiting...</p>
+        <p id="server-res-check">サーバーレスポンス : Waiting...</p>
+        <p>管理者権限：<span id="admin-verified">認証されていません...</span></p>
+    </div>
+
+    <div id="user-info" class="hide"></div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.4/socket.io.js"></script>
     <!--メイン部分-->
     <script>
