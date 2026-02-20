@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="ja" data-bs-theme="blue">
 
+
 <head>
   <title>Harezora-Sites</title>
   <meta charset="utf-8" />
@@ -28,15 +29,12 @@
       <div class="position-relative overflow-hidden m-md-3 text-center bg-body-tertiary">
         <div class="col-md-10 p-lg-5 mx-auto my-5">
           <h1 class="display-3 fw-bold">
-            <span contenteditable="true">タイトルを入力...</span>
+            <span contenteditable="true" id="page-title">タイトルを入力...</span>
           </h1>
           <div class="product-device shadow-sm d-none d-md-block"></div>
         </div>
       </div>
       <div class="col-md-10 main-text container text-left over-line main-contents">
-        <div class="paragraph-0 ">
-          <br />
-        </div>
       </div>
     </main>
     <div class="col-md-2 edit-bar">
@@ -74,7 +72,7 @@
             </button>
           </h2>
           <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
-            a
+            <label>Title</label><input type="text" class="input-title" value="タイトルを入力...">
           </div>
         </div>
 
@@ -120,6 +118,8 @@
         elementMenuBtn: document.getElementById("original-element-menu-btn"),
       },
       contentsContainer: document.querySelector(".contents-container"),
+      inputTitle: document.querySelector(".input-title"),
+      pageTitle: document.querySelector("#page-title"),
       updateContentsContainer: function () {
         this.contentsContainer.innerHTML = ""
 
@@ -165,7 +165,18 @@
       mouse.x = event.clientX; // 横座標
       mouse.y = event.clientY; // 縦座標
     });
+    editorEl.inputTitle.addEventListener("keydown", () => {
+      setTimeout(() => {
+        editorEl.pageTitle.textContent = editorEl.inputTitle.value
 
+      }, 100)
+    })
+    editorEl.pageTitle.addEventListener("keydown", () => {
+      setTimeout(() => {
+        editorEl.inputTitle.value = editorEl.pageTitle.textContent
+
+      }, 100);
+    })
     const pageData = {
       savedData: {
         src: "",
@@ -189,6 +200,31 @@
         }
         pageData.list.push(this.getRange(el));
 
+        el.addEventListener("drop", function (e) {
+          //e.preventDefault();
+
+          // ① HTMLとしてドロップされた場合（imgタグ）
+          const html = e.dataTransfer.getData("text/html");
+          if (html) {
+            const temp = document.createElement("div");
+            temp.innerHTML = html;
+
+            const img = temp.querySelector("img");
+            if (img) {
+              var num = null
+              for (var i = 0; i < imgList.length; i++) {
+                var b = img.classList.contains("contents-img-" + i)
+                if (b) {
+                  num = i
+                }
+              }
+              setTimeout(() => { addedImgProcess(num) }, 10)
+
+              return;
+            }
+
+          }
+        })
       },
       update: function () {
         this.savedData.src = editorEl.main.innerHTML
@@ -196,6 +232,10 @@
       },
       refresh: function () {
 
+      },
+      save: function () {
+        var str = JSON.stringify(this.savedData)
+        localStorage.setItem("autosave", str)
       },
     };
     function addedImgProcess(num) {
@@ -223,7 +263,7 @@
       var el = document.createElement(tag);
       el.classList.add("container-fluid");
 
-      el.classList.add("text-content");
+      el.classList.add("content");
       el.innerHTML = "<span contenteditable='true'>" + message + "</span>";
 
       pageData.setElement(el);
@@ -233,31 +273,7 @@
       //要素を移動とかできるようにして
       // ドロップ時の処理
 
-      el.addEventListener("drop", function (e) {
-        //e.preventDefault();
 
-        // ① HTMLとしてドロップされた場合（imgタグ）
-        const html = e.dataTransfer.getData("text/html");
-        if (html) {
-          const temp = document.createElement("div");
-          temp.innerHTML = html;
-
-          const img = temp.querySelector("img");
-          if (img) {
-            var num = null
-            for (var i = 0; i < imgList.length; i++) {
-              var b = img.classList.contains("contents-img-" + i)
-              if (b) {
-                num = i
-              }
-            }
-            setTimeout(() => { addedImgProcess(num) }, 10)
-
-            return;
-          }
-
-        }
-      })
     }
     editorEl.addHeading.addEventListener("click", () => {
       insertElement("h1", null, "test");
@@ -265,9 +281,35 @@
     editorEl.addText.addEventListener("click", () => {
       insertElement("p", null, "test");
     });
+    function init(reset = false) {
+      var data = localStorage.getItem("autosave")
+      if (data == null || reset) {
 
-    insertElement("h1", null, "First");
-    insertElement("p", null, "Sample text.");
+        insertElement("h1", null, "First");
+        insertElement("p", null, "Sample text.");
+      } else {
+        var obj = JSON.parse(data)
+        editorEl.main.innerHTML = ""
+        var tempEl = document.createElement("div")
+
+        tempEl.innerHTML = obj.src
+        var list = tempEl.childNodes
+        console.log(list)
+        for (var i = 0; i < obj.list.length; i++) {
+          console.log(list[i])
+          if (list[i] == undefined) { continue; }
+          if (list[i].localName == "#text") {
+            editorEl.main.innerHTML += list[i].innerHTML
+          } else {
+            insertElement(list[i].localName, null, list[i].innerHTML)
+          }
+        }
+      }
+
+
+    }
+
+    init()
 
     function isDropdownOpen(dropdownElement) {
       const menu = dropdownElement.querySelector('.dropdown-menu');
@@ -311,7 +353,10 @@
 
       pageData.update()
 
-    }, 1000 / 30);
+    }, 1000 / 24);
+    setInterval(() => {
+      pageData.save()
+    }, 1000 / 5)
     let targetElement = null
 
     document.querySelector("#delete-element-btn").addEventListener("click", () => {
@@ -333,8 +378,9 @@
     })
 
 
-    ///////////////////
+    /////////////////// 画像処理
     function convertToWebP(file, quality = 0.8) {
+      imageQueue.push(file)
 
       return new Promise((resolve, reject) => {
         // 対応拡張子チェック
@@ -396,31 +442,30 @@
       });
     }
 
-async function getFileFromImage(imgElement, fileName, mimeType = 'image/png') {
-  return new Promise((resolve, reject) => {
-    // 1. canvasを作成して描画
-    const canvas = document.createElement('canvas');
-    canvas.width = imgElement.naturalWidth;
-    canvas.height = imgElement.naturalHeight;
-    
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(imgElement, 0, 0);
+    async function getFileFromImage(imgElement, fileName, mimeType = 'image/png') {
+      return new Promise((resolve, reject) => {
+        // 1. canvasを作成して描画
+        const canvas = document.createElement('canvas');
+        canvas.width = imgElement.naturalWidth;
+        canvas.height = imgElement.naturalHeight;
 
-    // 2. canvasからBlobを作成
-    canvas.toBlob((blob) => {
-      if (!blob) {
-        reject(new Error('Canvas to Blob conversion failed'));
-        return;
-      }
-      // 3. BlobからFileオブジェクトを作成して返す
-      const file = new File([blob], fileName, { type: mimeType });
-      resolve(file);
-    }, mimeType);
-  });
-}
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(imgElement, 0, 0);
+
+        // 2. canvasからBlobを作成
+        canvas.toBlob((blob) => {
+          if (!blob) {
+            reject(new Error('Canvas to Blob conversion failed'));
+            return;
+          }
+          // 3. BlobからFileオブジェクトを作成して返す
+          const file = new File([blob], fileName, { type: mimeType });
+          resolve(file);
+        }, mimeType);
+      });
+    }
 
     async function inputImgProcess(file) {
-      console.log(file)
       const webpBlob = await convertToWebP(file, 0.8);
 
       // 表示確認
@@ -448,16 +493,40 @@ async function getFileFromImage(imgElement, fileName, mimeType = 'image/png') {
       editorEl.addImage.click()
     })
 
-    document.body.addEventListener("click",(e)=>{
-      if(e.target.classList.contains("contants-img")){
+    document.body.addEventListener("click", (e) => {
+      if (e.target.classList.contains("contants-img")) {
         console.log("aaa")
       }
     })
 
   </script>
+  <script type="module">
+    import FileStorageManager from "/js/indexedDB.js"
 
+    window.imageQueue = []
+
+    const manager = new FileStorageManager();
+
+    setInterval(async()=>{
+      if(imageQueue.length > 0){
+        const file = imageQueue.shift()
+        const id = await manager.save(file);
+        console.log("saved id:", id);   // => 1
+      }
+    },1000/24)
+
+    async function indexedDB_ALLDELETE(){
+      var len = manager.getAll().length
+      for(var i=0;i<len;i++){
+        manager.delete((i+1) + "")
+
+      }
+    }
+    indexedDB_ALLDELETE()
+    console.log(await manager.getAll())
+  </script>
+  <script src="js/indexedDB.js" type="module"></script>
   <div id="user-info" class="hide">
-
   </div>
   <button class="btn btn-outline-success hide" id="sign-out-btn">
     Sign out

@@ -97,8 +97,25 @@ initTheme();
 
 const rooms = []
 if (location.pathname.indexOf("chat.html") !== -1) {
+    var searchQueries = {}
+    if(location.search !== ""){
+        var list = location.search.split("?")[1].split("&")
+        for(var item of list){
+            var arr = item.split("=")
+            searchQueries[arr[0]] = arr[1]
+        }
+    }
+
+    var roomname = ""
+
+    if(searchQueries.room == undefined){
+        roomname = "main"
+    }else{
+        roomname = searchQueries.room
+    }
+
     //チャットページなら起動
-    const chat = new ChatRoom("main")
+    const chat = new ChatRoom(roomname)
     rooms.push(chat)
     window.chatData = chat
 }
