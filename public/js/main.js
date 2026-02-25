@@ -94,7 +94,7 @@ if (window.matchMedia) {
 
 initTheme();
 
-    searchQueries = {}
+    const searchQueries = {}
     if(location.search !== ""){
         var list = location.search.split("?")[1].split("&")
         for(var item of list){
