@@ -18,7 +18,6 @@ function parseQuery(qs) {
 }
 
 const querys = parseQuery(location.search);
-console.log(querys)
 
 function writeHeader() {
     const src = localStorage.getItem("headerSource")
@@ -36,7 +35,7 @@ function writeHeader() {
         document.querySelector("header").innerHTML = getData()
     } else {
         document.querySelector("header").innerHTML = src
-        console.log("header is added from localStrage")
+        console.log("Header is added from localStrage")
         getData()
     }
 

@@ -94,10 +94,7 @@ if (window.matchMedia) {
 
 initTheme();
 
-
-const rooms = []
-if (location.pathname.indexOf("chat.html") !== -1) {
-    var searchQueries = {}
+    searchQueries = {}
     if(location.search !== ""){
         var list = location.search.split("?")[1].split("&")
         for(var item of list){
@@ -105,6 +102,11 @@ if (location.pathname.indexOf("chat.html") !== -1) {
             searchQueries[arr[0]] = arr[1]
         }
     }
+const event = new CustomEvent("getQueryData",{detail: searchQueries});
+document.body.dispatchEvent(event); // -> 'Hello world'
+
+const rooms = []
+if (location.pathname.indexOf("chat.html") !== -1) {
 
     var roomname = ""
 

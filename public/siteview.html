@@ -515,14 +515,7 @@
       }
     },1000/24)
 
-    async function indexedDB_ALLDELETE(){
-      var len = manager.getAll().length
-      for(var i=0;i<len;i++){
-        manager.delete((i+1) + "")
-
-      }
-    }
-    indexedDB_ALLDELETE()
+    //await manager.clear() //全部削除
     console.log(await manager.getAll())
   </script>
   <script src="js/indexedDB.js" type="module"></script>

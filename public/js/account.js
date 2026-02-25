@@ -226,7 +226,7 @@ export class ChatRoom {
       var timeString = `${time.getMonth()+1}/${time.getDate()} ${time.getHours()}:${time.getMinutes()}`
 
       //HTML部分
-      el.innerHTML = `<div><span>${arr[i].name} : ${arr[i].msg}</span>
+      el.innerHTML = `<div><img class="chat-icon" src="${arr[i].photo}"><span>${arr[i].name} : ${arr[i].msg}</span>
                       <span class="chat-date-text">${timeString}</span></div>`
       this.el.list.append(el)
 
@@ -248,11 +248,12 @@ export class ChatRoom {
     const format = {
       color: "default"
     }//書式
+    const photo = userData.reloadUserInfo.photoUrl
 
     await setDoc(
       mainRef,
       {
-        [NUMBER]: { name: user.name, msg: msg, time: timeStamp, format: format, id: id },
+        [NUMBER]: { name: user.name, msg: msg, time: timeStamp, format: format, id: id ,photo:photo},
       },
       { merge: true }               // 既存フィールドは残す
     );
@@ -316,3 +317,12 @@ function base62ToBigInt(s) {
 // 使用例
 const input = "paeSxnibpnUnXpd26gqsiaOoIWg1";
 console.log(base62ToBigInt(input).toString(10)); // 10進数文字列として表示
+
+document.querySelector(".profile-link").addEventListener("click",()=>{
+  try{
+      location.href = location.origin + "/profile.html?uid=" + userData.uid
+  }catch(err){
+    alert("エラー発生。詳しくはログ見て。")
+    console.error(err)
+  }
+})

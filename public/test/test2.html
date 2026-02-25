@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="ja">
+
+<head>
+    <meta charset="utf-8" />
+    <title>plaza</title>
+    <style>
+        * {
+            padding: 0;
+            margin: 0;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.15.1/dist/phaser.min.js"></script>
+    <script defer>
+
+        const worldBorder = {
+            top: 0,
+            bottom: 1080,
+            left: 0,
+            right: 1920,
+        }
+        let speed = 5
+        let keys
+
+        function setPlayerTag(text, chara) {
+            var x = chara.x
+            var y = chara.y
+            text.x = x
+            text.y = y + 20
+        }
+
+        class ExampleScene extends Phaser.Scene {
+            preload() {
+                this.load.image("player", "img/player.png");
+                keys = this.input.keyboard.addKeys({
+                    'up': Phaser.Input.Keyboard.KeyCodes.W,
+                    'left': Phaser.Input.Keyboard.KeyCodes.A,
+                    'down': Phaser.Input.Keyboard.KeyCodes.S,
+                    'right': Phaser.Input.Keyboard.KeyCodes.D
+                });
+            }
+            create() {
+                this.player = this.add.sprite(config.width / 2, config.height / 2, "player");
+                this.player.setScale(0.3)
+                this.myPlayerTag = this.make.text({
+                    x: 400,
+                    y: 100,
+                    text: 'Harezora.',
+                    origin: { x: 0.5, y: 0.5 },
+                    style: {
+                        font: 'bold 20px Arial',
+                        fill: '#ededed',
+                        wordWrap: { width: 300 }
+                    },
+                    // origin: {x: 0.5, y: 0.5},
+                });
+                // var txt = scene.add.text(x, y, 'hello', { fontFamily: 'Arial', fontSize: 64, color: '#00ff00' });
+            }
+            update() {
+                if (keys.left.isDown && this.player.x > worldBorder.left) {
+                    this.player.x -= speed; // 左へ移動
+                } else if (keys.right.isDown && this.player.x < worldBorder.right) {
+                    this.player.x += speed;  // 右へ移動
+                } else {
+
+                }
+                if (keys.up.isDown && this.player.y > worldBorder.top) {
+                    this.player.y -= speed
+                } else if (keys.down.isDown && this.player.y < worldBorder.bottom) {
+                    this.player.y += speed
+                } else {
+                }
+
+                setPlayerTag(this.myPlayerTag, this.player)
+
+            }
+        }
+
+        const config = {
+            type: Phaser.CANVAS,
+            width: 1920,
+            height: 1080,
+            scene: ExampleScene,
+            scale: {
+                /* mode: Phaser.Scale.FIT, */
+                /* autoCenter: Phaser.Scale.CENTER_BOTH, */
+            },
+            input: {
+                keyboard: true,
+            },
+            backgroundColor: "#191919",
+        };
+
+
+        const game = new Phaser.Game(config);
+    </script>
+</head>
+
+<body></body>
+
+</html>

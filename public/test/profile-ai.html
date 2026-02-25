@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TwitHub Profile UI</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #e6edf3;
+            --text-sub: #8b949e;
+            --twitter-blue: #1d9bf0;
+            --github-green: #39d353;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        /* --- ヘッダー・バナー --- */
+        .header-banner {
+            height: 200px;
+            background: linear-gradient(135deg, #1d9bf0 0%, #00ffab 100%);
+            width: 100%;
+        }
+
+        /* --- メインレイアウト --- */
+        .profile-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 24px;
+            padding: 0 16px;
+            margin-top: -60px; /* アイコンをバナーに被せる */
+        }
+
+        /* --- サイドバー（プロフィール情報） --- */
+        .sidebar {
+            position: sticky;
+            top: 20px;
+        }
+
+        .avatar {
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            border: 6px solid var(--bg-color);
+            background-color: #333;
+            margin-bottom: 16px;
+            object-fit: cover;
+        }
+
+        .user-names { margin-bottom: 16px; }
+        .display-name { font-size: 24px; font-weight: 800; }
+        .user-handle { color: var(--text-sub); font-size: 20px; font-weight: 300; }
+
+        .btn-follow {
+            width: 100%;
+            padding: 8px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            background: var(--text-main);
+            color: var(--bg-color);
+            font-weight: bold;
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        .bio { font-size: 14px; margin-bottom: 16px; }
+
+        .user-meta {
+            font-size: 14px;
+            color: var(--text-sub);
+            list-style: none;
+        }
+        .user-meta li { margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+
+        /* --- メインコンテンツ --- */
+        .main-content {
+            padding-top: 70px; /* バナーとの調整 */
+        }
+
+        .nav-tabs {
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 20px;
+            gap: 20px;
+        }
+        .tab {
+            padding: 8px 12px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+        }
+        .tab.active { border-bottom-color: var(--twitter-blue); font-weight: bold; }
+
+        /* ピン留めセクション (GitHub風) */
+        .section-title { font-size: 16px; margin-bottom: 12px; font-weight: 400; }
+        .pinned-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+        }
+        .card-header { color: var(--twitter-blue); font-weight: bold; margin-bottom: 8px; cursor: pointer; }
+        .card-desc { font-size: 13px; color: var(--text-sub); margin-bottom: 12px; }
+        .card-footer { font-size: 12px; color: var(--text-sub); display: flex; gap: 15px; }
+
+        /* 芝生エリア (GitHub風) */
+        .contribution-graph {
+            padding: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+        }
+        .graph-label { font-size: 12px; color: var(--text-sub); margin-bottom: 8px; }
+        .cells {
+            display: grid;
+            grid-template-columns: repeat(40, 1fr);
+            gap: 3px;
+        }
+        .cell {
+            aspect-ratio: 1/1;
+            background-color: #161b22;
+            border-radius: 2px;
+            border: 1px solid rgba(27, 31, 35, 0.06);
+        }
+        .cell.level-1 { background-color: #0e4429; }
+        .cell.level-2 { background-color: #006d32; }
+        .cell.level-3 { background-color: #26a641; }
+        .cell.level-4 { background-color: #39d353; }
+
+        @media (max-width: 768px) {
+            .profile-layout { grid-template-columns: 1fr; }
+            .sidebar { position: static; margin-top: -80px; text-align: center; }
+            .avatar { margin: 0 auto 16px; }
+            .pinned-grid { grid-template-columns: 1fr; }
+            .user-meta li { justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header-banner"></div>
+
+    <div class="container">
+        <div class="profile-layout">
+            <aside class="sidebar">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" alt="Avatar" class="avatar">
+                <div class="user-names">
+                    <div class="display-name">Gemini Coder</div>
+                    <div class="user-handle">@gemini_dev</div>
+                </div>
+                <button class="btn-follow">Follow</button>
+                <p class="bio">
+                    Full-stack Developer / UI Designer.<br>
+                    Building things with AI and coffee. ☕️✨
+                </p>
+                <ul class="user-meta">
+                    <li>📍 Tokyo, Japan</li>
+                    <li>🔗 <span style="color: var(--twitter-blue)">github.com/gemini</span></li>
+                    <li>🗓 Joined February 2026</li>
+                </ul>
+                <div style="margin-top: 16px; font-size: 14px;">
+                    <strong style="color: var(--text-main);">1.2k</strong> <span style="color: var(--text-sub);">Following</span>
+                    &nbsp;
+                    <strong style="color: var(--text-main);">8.5k</strong> <span style="color: var(--text-sub);">Followers</span>
+                </div>
+            </aside>
+
+            <main class="main-content">
+                <nav class="nav-tabs">
+                    <a href="#" class="tab active">Overview</a>
+                    <a href="#" class="tab">Posts</a>
+                    <a href="#" class="tab">Repositories</a>
+                    <a href="#" class="tab">Media</a>
+                </nav>
+
+                <h2 class="section-title">Pinned</h2>
+                <div class="pinned-grid">
+                    <div class="card">
+                        <div class="card-header">my-awesome-app</div>
+                        <p class="card-desc">ReactとTypeScriptで構築した次世代のSNSプロトタイプ。</p>
+                        <div class="card-footer">
+                            <span>🔵 TypeScript</span>
+                            <span>⭐ 1.2k</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <div class="card-header">design-tokens-set</div>
+                        <p class="card-desc">TwitterとGitHubのハイブリッドデザイン用UIキット。</p>
+                        <div class="card-footer">
+                            <span>🎨 CSS</span>
+                            <span>⭐ 856</span>
+                        </div>
+                    </div>
+                </div>
+
+                <h2 class="section-title">842 posts in the last year</h2>
+                <div class="contribution-graph">
+                    <div class="graph-label">Daily Activities</div>
+                    <div class="cells" id="graphCells">
+                        </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // 芝生をランダムに生成
+        const grid = document.getElementById('graphCells');
+        for (let i = 0; i < 200; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'cell';
+            const rand = Math.random();
+            if (rand > 0.9) cell.classList.add('level-4');
+            else if (rand > 0.8) cell.classList.add('level-3');
+            else if (rand > 0.6) cell.classList.add('level-2');
+            else if (rand > 0.4) cell.classList.add('level-1');
+            grid.appendChild(cell);
+        }
+    </script>
+</body>
+</html>
