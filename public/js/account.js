@@ -250,7 +250,13 @@ export class ChatRoom {
     const format = {
       color: "default"
     }//書式
-    const photo = userData.reloadUserInfo.photoUrl
+    let photo = "/img/nanashi.svg"
+    if(userData.isLogin){
+      photo  = userData.reloadUserInfo.photoUrl
+    }else{
+      alert("申し訳ありませんが、ログインしていないユーザーはチャット送信機能をご利用いただけません。")
+      return 0;
+    }
 
     await setDoc(
       mainRef,
