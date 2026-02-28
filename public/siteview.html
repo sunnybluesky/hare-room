@@ -73,6 +73,7 @@
           </h2>
           <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
             <label>Title</label><input type="text" class="input-title" value="タイトルを入力...">
+                  <button type="button" class="btn btn-secondary delete-image-data">画像データを削除</button>
           </div>
         </div>
 
@@ -136,9 +137,10 @@
           }
         }
         for (var i = 0; i < imgList.length; i++) {
-          var arr = document.querySelectorAll(".contents-img-" + 0)
-          [0].parentNode.tagName
-          document.querySelector(".contents-img-" + i).src = imgList[i]
+          var arr = document.querySelectorAll(".contents-img-" + i)
+          for(var tg of arr){
+            tg.src = imgList[i]
+          }
         }
 
         //画像を挿入ボタンが押されたときの処理
@@ -379,8 +381,11 @@
 
 
     /////////////////// 画像処理
-    function convertToWebP(file, quality = 0.8) {
+    function convertToWebP(file, quality = 0.8,doesSave = true) {
+      if(doesSave){
       imageQueue.push(file)
+
+      }
 
       return new Promise((resolve, reject) => {
         // 対応拡張子チェック
@@ -465,15 +470,15 @@
       });
     }
 
-    async function inputImgProcess(file) {
-      const webpBlob = await convertToWebP(file, 0.8);
+    async function inputImgProcess(file,doesSave = false) {
+      const webpBlob = await convertToWebP(file, 0.8,doesSave);
 
       // 表示確認
       const img = document.getElementById("preview");
       img.src = URL.createObjectURL(webpBlob);
       imgList.push(img.src)
       console.log("WebP size:", Math.round(webpBlob.size / 1024), "KB");
-
+      console.log(img)
       editorEl.updateContentsContainer()
     }
 
@@ -482,7 +487,7 @@
       if (!file) return;
 
       try {
-        inputImgProcess(file)
+        inputImgProcess(file,true)
       } catch (err) {
         alert("error:" + err.message)
       }
@@ -502,9 +507,7 @@
   </script>
   <script type="module">
     import FileStorageManager from "/js/indexedDB.js"
-
     window.imageQueue = []
-
     const manager = new FileStorageManager();
 
     setInterval(async()=>{
@@ -515,9 +518,25 @@
       }
     },1000/24)
 
-    //await manager.clear() //全部削除
-    console.log(await manager.getAll())
-  </script>
+    setTimeout(async()=>{
+    const arr = await manager.getAll()
+    for(var item of arr){
+      let img = item.file
+    const file = new File([img], img.name, { type: img.type });
+      console.log(file)
+     await inputImgProcess(file,false)
+    }
+    editorEl.updateContentsContainer()
+    },200)
+
+
+    document.querySelector(".delete-image-data").addEventListener("click",async ()=>{
+      if(confirm("画像データを削除しますか？")){
+        await manager.clear() //全部削除
+        location.reload()
+      }
+    })
+</script>
   <script src="js/indexedDB.js" type="module"></script>
   <div id="user-info" class="hide">
   </div>
