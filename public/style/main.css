@@ -131,11 +131,43 @@ li {
     margin:0px;
 }
 .contents-img{
-    
+    max-width: fit-content;
 }
 
 .chat-icon{
     height:20px;
     border-radius: 5px;
     margin-right: 10px;
+}
+
+/*ドラッグ禁止*/
+
+img {
+  -webkit-user-drag: none;
+}
+img[draggable=true] {
+  -webkit-user-drag: auto;
+}
+*[draggable=true] img {
+  -webkit-touch-callout: none;
+}
+
+.dragged-img{
+    position: fixed;
+    max-width: 160px;
+    max-height: 90px;
+    height: 90px;
+    opacity: 0.5;
+}
+.dragged-img-navi{
+    position: fixed;
+    background-color: var(--primary);
+    opacity: 0.4;
+    width: 100%;
+    text-align: center;
+    min-height: 20px;
+    color: #000000;
+}
+body{
+
 }

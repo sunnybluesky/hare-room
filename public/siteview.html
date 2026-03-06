@@ -73,7 +73,7 @@
           </h2>
           <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
             <label>Title</label><input type="text" class="input-title" value="タイトルを入力...">
-                  <button type="button" class="btn btn-secondary delete-image-data">画像データを削除</button>
+            <button type="button" class="btn btn-secondary delete-image-data">画像データを削除</button>
           </div>
         </div>
 
@@ -103,6 +103,8 @@
   <img id="sample" class="hide" src="img/sample.png">
 
   </div>
+  <img class="hide dragged-img">
+  <div class="hide dragged-img-navi">+画像を挿入</div>
   <script>
     const settings = {
       defaultImageSize: 480,//横サイズ
@@ -121,6 +123,81 @@
       contentsContainer: document.querySelector(".contents-container"),
       inputTitle: document.querySelector(".input-title"),
       pageTitle: document.querySelector("#page-title"),
+      addDraggingProcess: function (img) {
+        let elList = pageData.list
+        let insertNumber = null
+        let centerList = []
+        function setInsertPosition() {
+          elList.sort((a, b) => {
+            const dateComparison = a.top - b.top;
+            if (dateComparison !== 0) {
+              return dateComparison;
+            }
+            return 0;
+          });
+          for (var item of elList) {
+            centerList.push((item.top + item.bottom) / 2)
+          }
+        }
+        let isDragging = false;
+        const draggedImg = document.querySelector(".dragged-img")
+        const navi = document.querySelector(".dragged-img-navi")
+        img.addEventListener('mousedown', (e) => {
+          isDragging = true;
+          console.log('開始:', e.clientX, e.clientY);
+          setInsertPosition()
+        });
+
+        document.addEventListener('mousemove', (e) => {
+          const x = e.clientX
+          const y = e.clientY
+          if (!isDragging) return;
+          draggedImg.classList.remove("hide")
+          draggedImg.src = img.src
+          var h = draggedImg.height
+          var w = draggedImg.width
+          draggedImg.style.left = (x - w / 2) + "px"
+          draggedImg.style.top = (y - h / 2) + "px"
+
+          if (y < elList[0].top) {
+
+          } else if (y > elList[elList.length - 1].bottom) {
+
+          } else {
+            var isBelow = true
+            for (var i = 0; i < elList.length; i++) {
+              if (y < centerList[i]) {
+                insertNumber = i - 1
+                if (insertNumber == -1) {
+                  insertNumber = null
+                }
+                break;
+              }
+            }
+          }
+
+          if (typeof insertNumber == "number") {
+            var n = insertNumber
+            navi.style.top = elList[n].bottom + "px"
+            navi.style.height = (elList[n + 1].top - elList[n].bottom) + "px"
+            navi.classList.remove("hide")
+          } else {
+            navi.classList.add("hide")
+          }
+        });
+
+        document.addEventListener('mouseup', (e) => {
+          navi.classList.add("hide")
+          if (!isDragging) return;
+          isDragging = false;
+          console.log('終了:', e.clientX, e.clientY, insertNumber);
+          if (typeof insertNumber == "number") {
+            insertElement("img", insertNumber, "", { src: img.src });
+          }
+          draggedImg.classList.add("hide")
+
+        });
+      },
       updateContentsContainer: function () {
         this.contentsContainer.innerHTML = ""
 
@@ -138,16 +215,20 @@
         }
         for (var i = 0; i < imgList.length; i++) {
           var arr = document.querySelectorAll(".contents-img-" + i)
-          for(var tg of arr){
+          for (var tg of arr) {
             tg.src = imgList[i]
+            this.addDraggingProcess(tg)
           }
         }
 
         //画像を挿入ボタンが押されたときの処理
         if (isPushedInsertImgBtn !== false) {
           var num = imgList.length - 1
+          /*
           pageData.list[isPushedInsertImgBtn].el.childNodes[0].innerHTML +=
             `<br><img width="480px" class="contents-img-${num} contents-img" src="${imgList[num]}" >`
+            */
+           insertElement("img",(0),"",{src:imgList[num]})
           isPushedInsertImgBtn = false
 
         }
@@ -196,11 +277,17 @@
         };
         return range;
       },
-      setElement: function (el) {
+      setElement: function (el, index = "auto") {
         if (el == undefined) {
           return 0;
         }
-        pageData.list.push(this.getRange(el));
+        if (index == "auto") {
+          pageData.list.push(this.getRange(el));
+        } else if (typeof index == "number") {
+          pageData.list.splice(index, 0, this.getRange(el));
+        } else {
+          console.error("indexに正しい値を設定して!!")
+        }
 
         el.addEventListener("drop", function (e) {
           //e.preventDefault();
@@ -260,35 +347,50 @@
       }
 
     }
-    function insertElement(tag = "p", positionData, message = "test") {
+    function insertElement(tag = "p", index = "auto", message = "test", data = null) {
+      var insertNumber = 0
       var message = message;
       var el = document.createElement(tag);
       el.classList.add("container-fluid");
 
       el.classList.add("content");
-      el.innerHTML = "<span contenteditable='true'>" + message + "</span>";
+      if (tag == "img") {
+        if (typeof data == "object") {
+          el.src = data.src
+          el.classList.add("content-img");
+        }
+      } else {
+        el.innerHTML = "<span contenteditable='true'>" + message + "</span>";
+      }
 
-      pageData.setElement(el);
-      editorEl.main.append(el);
+      if (insertNumber == -1 || index == "auto") {
+        editorEl.main.append(el);
+        index = "auto"
+      } else {
+        insertNumber = index
+        pageData.list[insertNumber].el.outerHTML += el.outerHTML
+      }
+      pageData.setElement(el, index);
       //リストとかに追加して管理できるようなプログラムを書いて
       //要素がホバーされるとメニューとか出てきて
       //要素を移動とかできるようにして
       // ドロップ時の処理
 
 
+
     }
     editorEl.addHeading.addEventListener("click", () => {
-      insertElement("h1", null, "test");
+      insertElement("h1", "auto", "test");
     });
     editorEl.addText.addEventListener("click", () => {
-      insertElement("p", null, "test");
+      insertElement("p", "auto", "test");
     });
     function init(reset = false) {
       var data = localStorage.getItem("autosave")
       if (data == null || reset) {
 
-        insertElement("h1", null, "First");
-        insertElement("p", null, "Sample text.");
+        insertElement("h1", "auto", "First");
+        insertElement("p", "auto", "Sample text.");
       } else {
         var obj = JSON.parse(data)
         editorEl.main.innerHTML = ""
@@ -298,12 +400,15 @@
         var list = tempEl.childNodes
         console.log(list)
         for (var i = 0; i < obj.list.length; i++) {
-          console.log(list[i])
           if (list[i] == undefined) { continue; }
           if (list[i].localName == "#text") {
             editorEl.main.innerHTML += list[i].innerHTML
           } else {
-            insertElement(list[i].localName, null, list[i].innerHTML)
+            if (list[i].localName == "img") {
+              insertElement(list[i].localName, "auto", list[i].innerHTML, { src: list[i].src })
+            } else {
+              insertElement(list[i].localName, "auto", list[i].innerHTML)
+            }
           }
         }
       }
@@ -381,13 +486,23 @@
 
 
     /////////////////// 画像処理
-    function convertToWebP(file, quality = 0.8,doesSave = true) {
-      if(doesSave){
-      imageQueue.push(file)
+    // 画像BlobをBase64に変換
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+
+    async function convertToWebP(file, quality = 0.8, doesSave = true) {
+      if (doesSave) {
+        imageQueue.push(file)
 
       }
 
-      return new Promise((resolve, reject) => {
+      return new Promise(async (resolve, reject) => {
         // 対応拡張子チェック
         if (!/image\/(png|jpeg|jpg)/.test(file.type)) {
           reject(new Error("画像形式は PNG/JPEG/JPG のみ対応しています。"));
@@ -397,7 +512,7 @@
         const img = new Image();
         const url = URL.createObjectURL(file);
 
-        img.onload = () => {
+        img.onload = async() => {
           const canvas = document.createElement("canvas");
           canvas.width = img.width;
           canvas.height = img.height;
@@ -420,7 +535,9 @@
         };
 
         img.onerror = () => reject(new Error("画像読み込み失敗"));
-        img.src = url;
+        
+        img.src = url 
+        console.log(url)
       });
     }
     function imgToFile(img, fileName = "image.png") {
@@ -470,15 +587,26 @@
       });
     }
 
-    async function inputImgProcess(file,doesSave = false) {
-      const webpBlob = await convertToWebP(file, 0.8,doesSave);
+    async function inputImgProcess(file, doesSave = false,hasConvertedBase64 = false) {
+      let base64URL
+      if(hasConvertedBase64){
+        //すでにbase64形式に変換されてるなら、file引数はbase64のURLにすること
+        if(typeof file == "string"){
+          base64URL = file
+        }else{
+          console.error("与えられたfile引数の型がstringじゃないよ!!")
+        }
+      }else{
+      const webpBlob = await convertToWebP(file, 0.8, doesSave);
 
       // 表示確認
       const img = document.getElementById("preview");
       img.src = URL.createObjectURL(webpBlob);
-      imgList.push(img.src)
-      console.log("WebP size:", Math.round(webpBlob.size / 1024), "KB");
-      console.log(img)
+     base64URL = await blobToBase64(webpBlob);
+
+      }
+      imgList.push(base64URL)
+      console.log("WebP size:", Math.round(base64URL.length / 1024), "KB");
       editorEl.updateContentsContainer()
     }
 
@@ -487,7 +615,7 @@
       if (!file) return;
 
       try {
-        inputImgProcess(file,true)
+        inputImgProcess(file, true)
       } catch (err) {
         alert("error:" + err.message)
       }
@@ -510,33 +638,35 @@
     window.imageQueue = []
     const manager = new FileStorageManager();
 
-    setInterval(async()=>{
-      if(imageQueue.length > 0){
-        const file = imageQueue.shift()
+    setInterval(async () => {
+      if (imageQueue.length > 0) {
+        let file = imageQueue.shift()
+        const base64URL = await blobToBase64(file)
+        file = new File([base64URL], 'hoge.txt', { type: 'text/plain' });
         const id = await manager.save(file);
         console.log("saved id:", id);   // => 1
       }
-    },1000/24)
+    }, 1000 / 24)
 
-    setTimeout(async()=>{
-    const arr = await manager.getAll()
-    for(var item of arr){
-      let img = item.file
-    const file = new File([img], img.name, { type: img.type });
-      console.log(file)
-     await inputImgProcess(file,false)
-    }
-    editorEl.updateContentsContainer()
-    },200)
+    setTimeout(async () => {
+      const arr = await manager.getAll()
+      for (var item of arr) { 
+        const base64URL = await item.file.text()
+        /*new File([img], img.name, { type: img.type });
+        console.log(file) */
+        await inputImgProcess(base64URL, false,true)
+      }
+      editorEl.updateContentsContainer()
+    }, 200)
 
 
-    document.querySelector(".delete-image-data").addEventListener("click",async ()=>{
-      if(confirm("画像データを削除しますか？")){
+    document.querySelector(".delete-image-data").addEventListener("click", async () => {
+      if (confirm("画像データを削除しますか？")) {
         await manager.clear() //全部削除
         location.reload()
       }
     })
-</script>
+  </script>
   <script src="js/indexedDB.js" type="module"></script>
   <div id="user-info" class="hide">
   </div>
