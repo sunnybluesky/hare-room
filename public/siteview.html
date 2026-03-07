@@ -386,7 +386,9 @@
       insertElement("p", "auto", "test");
     });
     function init(reset = false) {
+      //データ取得
       var data = localStorage.getItem("autosave")
+      
       if (data == null || reset) {
 
         insertElement("h1", "auto", "First");
@@ -407,7 +409,8 @@
             if (list[i].localName == "img") {
               insertElement(list[i].localName, "auto", list[i].innerHTML, { src: list[i].src })
             } else {
-              insertElement(list[i].localName, "auto", list[i].innerHTML)
+              var el = list[i].querySelector("span")
+              insertElement(list[i].localName, "auto", el.innerHTML)
             }
           }
         }
@@ -606,7 +609,7 @@ function blobToBase64(blob) {
 
       }
       imgList.push(base64URL)
-      console.log("WebP size:", Math.round(base64URL.length / 1024), "KB");
+     // console.log("WebP size:", Math.round(base64URL.length / 1024), "KB");
       editorEl.updateContentsContainer()
     }
 
