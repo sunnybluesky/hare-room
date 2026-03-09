@@ -281,7 +281,8 @@ export class ChatRoom {
 
     const stop = listenToDocument("chat", room, (data, type) => {
       if (type === "removed") {
-        console.log("ドキュメントが削除されました");
+        console.log("ドキュメントが削除されました!");
+        location.href = "404.html"
         return;
       }
 

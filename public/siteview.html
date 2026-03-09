@@ -322,8 +322,9 @@
       refresh: function () {
 
       },
-      save: function () {
+      save: async function () {
         var str = JSON.stringify(this.savedData)
+
         localStorage.setItem("autosave", str)
       },
     };
@@ -639,20 +640,20 @@ function blobToBase64(blob) {
   <script type="module" defer>
     import FileStorageManager from "/js/indexedDB.js"
     window.imageQueue = []
-    const manager = new FileStorageManager();
+    window.ImageManager = new FileStorageManager();
 
     setInterval(async () => {
       if (imageQueue.length > 0) {
         let file = imageQueue.shift()
         const base64URL = await blobToBase64(file)
         file = new File([base64URL], 'hoge.txt', { type: 'text/plain' });
-        const id = await manager.save(file);
+        const id = await ImageManager.save(file);
         console.log("saved id:", id);   // => 1
       }
     }, 1000 / 24)
 
     setTimeout(async () => {
-      const arr = await manager.getAll()
+      const arr = await ImageManager.getAll()
       for (var item of arr) { 
         const base64URL = await item.file.text()
         /*new File([img], img.name, { type: img.type });
@@ -665,7 +666,7 @@ function blobToBase64(blob) {
 
     document.querySelector(".delete-image-data").addEventListener("click", async () => {
       if (confirm("画像データを削除しますか？")) {
-        await manager.clear() //全部削除
+        await ImageManager.clear() //全部削除
         location.reload()
       }
     })
