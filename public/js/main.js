@@ -121,3 +121,4 @@ if (location.pathname.indexOf("chat.html") !== -1) {
     rooms.push(chat)
     window.chatData = chat
 }
+

@@ -224,8 +224,8 @@ export class ChatRoom {
       time = new Date(time)
 
       var m = time.getMinutes() + ""
-      if(m.length == 1){m = "0" + m}
-      var timeString = `${time.getMonth()+1}/${time.getDate()} ${time.getHours()}:${m}`
+      if (m.length == 1) { m = "0" + m }
+      var timeString = `${time.getMonth() + 1}/${time.getDate()} ${time.getHours()}:${m}`
 
       //HTML部分
       el.innerHTML = `<div><img class="chat-icon" src="${arr[i].photo}"><span>${arr[i].name} : ${arr[i].msg}</span>
@@ -251,9 +251,9 @@ export class ChatRoom {
       color: "default"
     }//書式
     let photo = "/img/nanashi.svg"
-    if(userData.isLogin){
-      photo  = userData.reloadUserInfo.photoUrl
-    }else{
+    if (userData.isLogin) {
+      photo = userData.reloadUserInfo.photoUrl
+    } else {
       alert("申し訳ありませんが、ログインしていないユーザーはチャット送信機能をご利用いただけません。")
       return 0;
     }
@@ -261,7 +261,7 @@ export class ChatRoom {
     await setDoc(
       mainRef,
       {
-        [NUMBER]: { name: user.name, msg: msg, time: timeStamp, format: format, id: id ,photo:photo},
+        [NUMBER]: { name: user.name, msg: msg, time: timeStamp, format: format, id: id, photo: photo },
       },
       { merge: true }               // 既存フィールドは残す
     );
@@ -289,7 +289,7 @@ export class ChatRoom {
       console.log(`ドキュメントが ${type} されました`);
       this.data = data
       this.getRoomData("main", false)
-      
+
       var roomName = window.chatData.data.config.roomName
       this.el.roomName.textContent = `Chat - ${roomName}`
     });
@@ -327,11 +327,33 @@ function base62ToBigInt(s) {
 const input = "paeSxnibpnUnXpd26gqsiaOoIWg1";
 console.log(base62ToBigInt(input).toString(10)); // 10進数文字列として表示
 
-document.querySelector(".profile-link").addEventListener("click",()=>{
-  try{
-      location.href = location.origin + "/profile.html?uid=" + userData.uid
-  }catch(err){
-    alert("エラー発生。詳しくはログ見て。")
+document.querySelector(".profile-link").addEventListener("click", () => {
+  try {
+    location.href = location.origin + "/profile.html?uid=" + userData.uid
+  } catch (err) {
+    alert("エラー発生。")
     console.error(err)
   }
 })
+
+function getProfile(id) {
+  console.log(queryData.uid)
+  const stop = listenToDocument("profiles", id, (data, type) => {
+    if (type === "removed") {
+      console.log("ドキュメントが削除されました!");
+      location.href = "404.html"
+      return;
+    } else {
+      console.log("User data:", data)
+    }
+
+  });
+}
+let queryData = {}
+document.body.addEventListener('getQueryData', function (e) {
+  queryData = e.detail
+  if (location.href.indexOf("profile.html") !== -1) {
+    //getProfile(queryData.uid)
+    getProfile("mftVcLTo03oKB3lrg5Dw")
+  }
+});

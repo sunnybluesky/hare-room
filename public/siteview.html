@@ -23,6 +23,7 @@
 
 <body>
   <header></header>
+
   <!--conten teditable="true"絶対つける！！！！-->
   <div class="container-fluid flex">
     <main class="col-md-10">
@@ -73,7 +74,9 @@
           </h2>
           <div id="collapseTwo" class="accordion-collapse collapse show" data-bs-parent="#accordionExample">
             <label>Title</label><input type="text" class="input-title" value="タイトルを入力...">
+            <button type="button" class="btn btn-primary save">保存する</button>
             <button type="button" class="btn btn-secondary delete-image-data">画像データを削除</button>
+            <button type="button" class="btn btn-secondary delete-autosave-data">オートセーブデータを削除</button>
           </div>
         </div>
 
@@ -105,7 +108,10 @@
   </div>
   <img class="hide dragged-img">
   <div class="hide dragged-img-navi">+画像を挿入</div>
+  <script src="js/alert.js"></script>
   <script>
+    window.imageQueue = []
+    window.autoSaveQueue = []
     const settings = {
       defaultImageSize: 480,//横サイズ
     }
@@ -228,7 +234,7 @@
           pageData.list[isPushedInsertImgBtn].el.childNodes[0].innerHTML +=
             `<br><img width="480px" class="contents-img-${num} contents-img" src="${imgList[num]}" >`
             */
-           insertElement("img",(0),"",{src:imgList[num]})
+          insertElement("img", (0), "", { src: imgList[num] })
           isPushedInsertImgBtn = false
 
         }
@@ -317,6 +323,9 @@
       },
       update: function () {
         this.savedData.src = editorEl.main.innerHTML
+        const tempEl = document.createElement("div")
+        tempEl.innerHTML = editorEl.main.innerHTML
+        /////
         this.savedData.list = this.list
       },
       refresh: function () {
@@ -324,8 +333,7 @@
       },
       save: async function () {
         var str = JSON.stringify(this.savedData)
-
-        localStorage.setItem("autosave", str)
+        autoSaveQueue.push(str)
       },
     };
     function addedImgProcess(num) {
@@ -357,6 +365,7 @@
       el.classList.add("content");
       if (tag == "img") {
         if (typeof data == "object") {
+          console.log(data)
           el.src = data.src
           el.classList.add("content-img");
         }
@@ -389,8 +398,11 @@
     function init(reset = false) {
       //データ取得
       var data = localStorage.getItem("autosave")
-      
-      if (data == null || reset) {
+      let isEmpty = data == null || data == "undefined"
+      if (!isEmpty) {
+        isEmpty = reset
+      }
+      if (isEmpty) {
 
         insertElement("h1", "auto", "First");
         insertElement("p", "auto", "Sample text.");
@@ -408,10 +420,16 @@
             editorEl.main.innerHTML += list[i].innerHTML
           } else {
             if (list[i].localName == "img") {
+              //console.log(list[i])
               insertElement(list[i].localName, "auto", list[i].innerHTML, { src: list[i].src })
             } else {
-              var el = list[i].querySelector("span")
-              insertElement(list[i].localName, "auto", el.innerHTML)
+              if (list[i].localName == undefined) {
+
+              } else {
+                var el = list[i].querySelector("span")
+                insertElement(list[i].localName, "auto", el.innerHTML)
+              }
+
             }
           }
         }
@@ -466,8 +484,12 @@
 
     }, 1000 / 24);
     setInterval(() => {
-      pageData.save()
+      //pageData.save()
     }, 1000 / 5)
+    document.querySelector(".save"), addEventListener("click", async () => {
+      await pageData.save()
+    })
+
     let targetElement = null
 
     document.querySelector("#delete-element-btn").addEventListener("click", () => {
@@ -491,14 +513,14 @@
 
     /////////////////// 画像処理
     // 画像BlobをBase64に変換
-function blobToBase64(blob) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = reject;
-    reader.readAsDataURL(blob);
-  });
-}
+    function blobToBase64(blob) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
 
     async function convertToWebP(file, quality = 0.8, doesSave = true) {
       if (doesSave) {
@@ -509,14 +531,16 @@ function blobToBase64(blob) {
       return new Promise(async (resolve, reject) => {
         // 対応拡張子チェック
         if (!/image\/(png|jpeg|jpg)/.test(file.type)) {
-          reject(new Error("画像形式は PNG/JPEG/JPG のみ対応しています。"));
+          var msg = "画像形式は PNG/JPEG/JPG のみ対応しています。"
+          alert(msg)
+          reject(new Error(msg));
           return;
         }
 
         const img = new Image();
         const url = URL.createObjectURL(file);
 
-        img.onload = async() => {
+        img.onload = async () => {
           const canvas = document.createElement("canvas");
           canvas.width = img.width;
           canvas.height = img.height;
@@ -539,8 +563,8 @@ function blobToBase64(blob) {
         };
 
         img.onerror = () => reject(new Error("画像読み込み失敗"));
-        
-        img.src = url 
+
+        img.src = url
         console.log(url)
       });
     }
@@ -591,26 +615,26 @@ function blobToBase64(blob) {
       });
     }
 
-    async function inputImgProcess(file, doesSave = false,hasConvertedBase64 = false) {
+    async function inputImgProcess(file, doesSave = false, hasConvertedBase64 = false) {
       let base64URL
-      if(hasConvertedBase64){
+      if (hasConvertedBase64) {
         //すでにbase64形式に変換されてるなら、file引数はbase64のURLにすること
-        if(typeof file == "string"){
+        if (typeof file == "string") {
           base64URL = file
-        }else{
-          console.error("与えられたfile引数の型がstringじゃないよ!!")
+        } else {
+          console.error("与えられたfile引数の型がstringではありません。")
         }
-      }else{
-      const webpBlob = await convertToWebP(file, 0.8, doesSave);
+      } else {
+        const webpBlob = await convertToWebP(file, 0.8, doesSave);
 
-      // 表示確認
-      const img = document.getElementById("preview");
-      img.src = URL.createObjectURL(webpBlob);
-     base64URL = await blobToBase64(webpBlob);
+        // 表示確認
+        const img = document.getElementById("preview");
+        img.src = URL.createObjectURL(webpBlob);
+        base64URL = await blobToBase64(webpBlob);
 
       }
       imgList.push(base64URL)
-     // console.log("WebP size:", Math.round(base64URL.length / 1024), "KB");
+      // console.log("WebP size:", Math.round(base64URL.length / 1024), "KB");
       editorEl.updateContentsContainer()
     }
 
@@ -639,26 +663,65 @@ function blobToBase64(blob) {
   </script>
   <script type="module" defer>
     import FileStorageManager from "/js/indexedDB.js"
-    window.imageQueue = []
+
     window.ImageManager = new FileStorageManager();
+    window.SaveDataManager = new FileStorageManager("saveData", "files", 1);
 
     setInterval(async () => {
       if (imageQueue.length > 0) {
         let file = imageQueue.shift()
         const base64URL = await blobToBase64(file)
-        file = new File([base64URL], 'hoge.txt', { type: 'text/plain' });
+        const tag = Math.round(Math.random() * 900000) + 99999
+        console.log(tag)
+        file = new File([base64URL], `image_${tag}_.txt`, { type: 'text/plain' });
         const id = await ImageManager.save(file);
         console.log("saved id:", id);   // => 1
       }
+
+      //Save
+      if (autoSaveQueue.length > 0) {
+        localStorage.setItem("autosave", autoSaveQueue[0])
+        const data = JSON.parse(autoSaveQueue[0])
+        console.log(data)
+        autoSaveQueue = []
+        const container = document.createElement("div")
+        container.innerHTML = data.src
+        const imageElements = container.querySelectorAll("img")
+        const savedImages = []
+        const images = []
+        var temp = await ImageManager.getAll()
+        for (var i = 0; i < temp.length; i++) {
+          savedImages.push(await temp[i].file.text())
+        }
+        for(var i=0;i<imageElements.length;i++){
+          images.push(imageElements[i].src)
+        }
+        console.log(savedImages)
+
+        for(var i=0;i<images.length;i++){
+          var str = images[i] + ""
+          for(var j=0;j<savedImages.length;j++){
+            if(str == (savedImages[j] + "")){
+              console.log("matched at",j)
+              break;
+            }
+          }
+        }
+      }
+
     }, 1000 / 24)
 
     setTimeout(async () => {
       const arr = await ImageManager.getAll()
-      for (var item of arr) { 
-        const base64URL = await item.file.text()
-        /*new File([img], img.name, { type: img.type });
-        console.log(file) */
-        await inputImgProcess(base64URL, false,true)
+      for (var item of arr) {
+        if (item.name.indexOf("image_") !== -1) {
+          console.log(item)
+          const base64URL = await item.file.text()
+          /*new File([img], img.name, { type: img.type });
+          console.log(file) */
+          await inputImgProcess(base64URL, false, true)
+        }
+
       }
       editorEl.updateContentsContainer()
     }, 200)
@@ -670,7 +733,20 @@ function blobToBase64(blob) {
         location.reload()
       }
     })
+
+    // Save
+    document.querySelector(".delete-autosave-data").addEventListener("click", async () => {
+      if (confirm("保存したデータを削除しますか？")) {
+        await SaveDataManager.clear() //全部削除
+        location.reload()
+      }
+    })
+
+    console.log(await SaveDataManager.getAll())
+
+
   </script>
+
   <script src="js/indexedDB.js" type="module"></script>
   <div id="user-info" class="hide">
   </div>

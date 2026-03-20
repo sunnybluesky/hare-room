@@ -11,7 +11,8 @@
  ##   ##  ##  ##    ##  ##   ##   #           ##   ##    ##       ##      ##   #
  ##   ##  ##  ##   #### ##  #######            #####    ####     ####    #######
 
- Want to develop together? Contact me at harezora3@gmail.com.
+ Want to develop together? Contact me at harezora3@gmail.com!
+ 
 -->
 
 <head>
@@ -53,7 +54,6 @@
     <script>
         let searchQueries
         document.body.addEventListener('getQueryData', function(e) {
-         console.log(e.detail);
             searchQueries = e.detail
             document.querySelector("#uid-info").textContent = `Requested ID: ${searchQueries.uid}`
         });
@@ -76,6 +76,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
+        
 
     <!--メイン部分-->
     <script src="js/main.js" type="module" defer></script>
